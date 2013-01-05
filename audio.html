@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>Yozeeka | digital music venue</title>
+      <meta name="description" content="Chat live with your favorite musicians.  Record and sell your versions of their songs." />
+    <meta name="keywords" content="Live streaming video music" />
+    <meta name='robots' content='noindex,nofollow' />
+
+      <link rel="shortcut icon" href="../assets/images/Ip0cVs.ico" />
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/audio.css">
+  <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+
+  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+  <script src="assets/js/jQueryRotateCompressed.2.2.js"></script>
+  
+
+</head>
+<header>
+  
+  <div class="logo"></div>
+  <h1 class="title">Yozeeka</h1>    
+      
+  
+</header>
+
+<body>
+
+
+<script> 
+  
+$('document').ready(function() {
+
+//*****animate reels*****//
+
+var goSpeed;
+var rewindSpeed;
+        
+        function spin() {
+          clearInterval(goSpeed);
+          clearInterval(rewindSpeed);
+          var speed = 0;
+          
+          function playReel() {
+            speed -= 1;
+            $('#rLeft').rotate(speed);
+            $('#rRight').rotate(speed);
+        
+          } 
+        
+          
+          goSpeed = setInterval(playReel, 10);
+       }
+       
+       function stopSpin() {
+        clearInterval(goSpeed);
+        clearInterval(rewindSpeed);
+        var speed = 0;
+      }
+      
+      function reverseSpin() {
+        clearInterval(goSpeed);
+        clearInterval(rewindSpeed); 
+        var speed = 0;
+          function rewindReel() {
+          speed += 3.5;
+          $('#rLeft').rotate(speed);
+          $('#rRight').rotate(speed);
+        
+          } 
+          
+          rewindSpeed = setInterval(rewindReel, 2);
+          setTimeout(function(){ 
+        clearInterval(rewindSpeed), alert('ready')}, 2000);
+      }
+       
+      
+//*****make noise*****
+//Step 1
+var context;
+function initContext() {
+  try {
+    context = new webkitAudioContext();
+    //alert("context created"); //test
+  }
+  catch(e) {
+    alert('Sorry, your browser does not support the Web Audio API.');
+  }
+        
+}
+
+
+ 
+//Step 2
+ var myAudioBuffer = null;
+ 
+//Step 2a - define songs
+ 
+var songVault = [['yourBand.mp3', 'yourBand_t.mp3', 'yourBand_v.mp3'],
+     ['echoes.mp3', 'echoes_t.mp3']];
+ 
+ 
+ 
+//Steps 3 and 4
+  var url,
+      demo = 'assets/audio/' + songVault[0][0],
+      track = 'assets/audio/' + songVault[0][1],
+      vocal = 'assets/audio/' + songVault[0][2];
+ function loadSound(url) {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+  request.responseType = 'arraybuffer';
+
+  request.onload = function() {
+    //alert("sound loaded"); //test
+    context.decodeAudioData(request.response, function(buffer) {
+      myAudioBuffer = buffer;
+      alert("ready"); //test
+    });
+  }
+  request.send();
+}
+ 
+//Step 5
+var source = null;
+function playSound(anybuffer) {
+  source = context.createBufferSource();
+  source.buffer = anybuffer;
+  source.connect(context.destination);
+  //source.start();
+  source.noteOn(0); //see note in Step 6 text
+  
+  
+}
+
+
+
+//Step 6
+function stopSound() {
+  if (source) {
+    //source.stop();                    //may replace noteOff in 2013
+    source.noteOff(0); 
+  }
+}
+
+
+
+//*****connect to buttons*****
+
+
+  var init = initContext();
+  var loadTrack = loadSound(demo);  //CALLING THIS FUNCTION ON LOCAL SERVER BREAKS ENTIRE SCRIPT
+  //var loadVocal = loadSound(vocal);
+ 
+
+    $('#play').click(function(){
+    
+      if (context.activeSourceCount === 0) {
+            playSound(myAudioBuffer);
+            spin();     
+          }
+              
+      });
+        
+      $('#stop').click(function(){
+          stopSound(myAudioBuffer);
+          stopSpin();
+      });
+    
+    $("#rewind").click(function () {
+          stopSound(myAudioBuffer);
+          reverseSpin();
+        });
+        
+});
+  
+</script>
+
+
+<div class="content">
+    
+    <div class="reels">
+            <ul>
+              <li id="rLeft"></li>
+              <li id="rRight"></li>
+            </ul>
+        </div>
+    
+    <div id="buttons">
+          <ul> 
+
+              <li><button id="play">play</li>
+
+              <li><button id="rewind">rewind</button></li>
+
+              <li><button id="stop">stop</button></li>
+
+              <li><button id="record">record</button></li>
+
+          </ul>
+        </div>  
+              
+</div>          
+        
+</body>
+<footer>
+                            
+  <div id="footmiddle">
+    <ul>
+      <li><a href="#"><img src="assets/images/grey-fb.png" alt="facebook"/></a></li>
+      <li><a href="#"><img src="assets/images/grey-mail2.png" alt="contact" /></a></li>
+      <li><a href="#"><img src="assets/images/grey-twit2.png" alt="twitter" /></a></li>
+    </ul>
+  </div>
+      
+</footer>
+</html>
